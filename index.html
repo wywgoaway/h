@@ -320,6 +320,11 @@
             font-weight: 500;
         }
         
+        .item-quantity {
+            font-size: var(--text-sm);
+            color: var(--text-secondary);
+        }
+        
         .item-price {
             font-weight: 700;
             color: var(--primary);
@@ -785,53 +790,77 @@
         function processVoiceCommand(text) {
             elements.manualInput.value = text;
             
-            // Try to extract item and price
-            let itemName, price;
+            // Try to extract item, quantity and price
+            let itemName, quantity = 1, price = 0;
             
             if (currentLanguage === 'ar') {
                 // Arabic pattern matching
                 const priceMatch = text.match(/(\d+[,.]?\d*)\s*(يورو|ريال|دولار|جنيها?|ليرة?)/);
                 price = priceMatch ? parseFloat(priceMatch[1].replace(',', '.')) : 0;
                 
-                itemName = text.replace(/(\d+[,.]?\d*)\s*(يورو|ريال|دولار|جنيها?|ليرة?)/, '')
-                              .replace(/\d+\s*(كيلو|كجم|جرام|لتر|علبة|حبة)/, '')
-                              .trim();
+                // Extract quantity (like 2 كيلو or 3 علب)
+                const quantityMatch = text.match(/(\d+[,.]?\d*)\s*(كيلو|كجم|جرام|لتر|علبة|حبة|قطعة|كيس)/);
+                if (quantityMatch) {
+                    quantity = parseFloat(quantityMatch[1].replace(',', '.'));
+                    const unit = quantityMatch[2];
+                    
+                    // Standardize units
+                    if (unit === 'كيلو' || unit === 'كجم') {
+                        quantity = quantity + ' كجم';
+                    } else if (unit === 'جرام') {
+                        quantity = quantity + ' جم';
+                    } else {
+                        quantity = quantity + ' ' + unit;
+                    }
+                }
+                
+                // Extract item name (remove quantity and price)
+                itemName = text
+                    .replace(/(\d+[,.]?\d*)\s*(يورو|ريال|دولار|جنيها?|ليرة?)/, '')
+                    .replace(/(\d+[,.]?\d*)\s*(كيلو|كجم|جرام|لتر|علبة|حبة|قطعة|كيس)/, '')
+                    .trim();
             } else {
                 // English pattern matching
                 const priceMatch = text.match(/(\d+[,.]?\d*)\s*(euros?|dollars?|pounds?|USD|EUR)/);
                 price = priceMatch ? parseFloat(priceMatch[1].replace(',', '.')) : 0;
                 
-                itemName = text.replace(/(\d+[,.]?\d*)\s*(euros?|dollars?|pounds?|USD|EUR)/, '')
-                              .replace(/\d+\s*(kg|kilo|grams?|liters?|bottles?)/, '')
-                              .trim();
+                // Extract quantity (like 2kg or 3 bottles)
+                const quantityMatch = text.match(/(\d+[,.]?\d*)\s*(kg|kilo|kilos|grams?|liters?|bottles?|pieces?|bags?)/);
+                if (quantityMatch) {
+                    quantity = parseFloat(quantityMatch[1].replace(',', '.'));
+                    const unit = quantityMatch[2];
+                    
+                    // Standardize units
+                    if (unit === 'kg' || unit === 'kilo' || unit === 'kilos') {
+                        quantity = quantity + ' kg';
+                    } else if (unit === 'grams' || unit === 'gram') {
+                        quantity = quantity + ' g';
+                    } else {
+                        quantity = quantity + ' ' + unit;
+                    }
+                }
+                
+                // Extract item name (remove quantity and price)
+                itemName = text
+                    .replace(/(\d+[,.]?\d*)\s*(euros?|dollars?|pounds?|USD|EUR)/, '')
+                    .replace(/(\d+[,.]?\d*)\s*(kg|kilo|kilos|grams?|liters?|bottles?|pieces?|bags?)/, '')
+                    .trim();
             }
             
             if (itemName === '') {
                 itemName = currentLanguage === 'ar' ? 'سلعة غير معروفة' : 'Unknown item';
             }
             
-            if (price > 0) {
-                addGroceryItem(itemName, price);
-            } else {
-                // If no price detected, add as a note
-                addNote(text);
-                const statusMsg = currentLanguage === 'ar' ? 
-                    'تمت إضافته إلى الملاحظات' : 
-                    'Added to notes';
-                elements.voiceStatus.textContent = statusMsg;
-                setTimeout(() => {
-                    elements.voiceStatus.textContent = currentLanguage === 'ar' ? 
-                        'اضغط على الزر وتحدث بوضوح' : 
-                        'Press the button and speak clearly';
-                }, 2000);
-            }
+            // Always add to grocery list, even if price is 0 (user can edit later)
+            addGroceryItem(itemName, quantity, price);
         }
 
         // ====== GROCERY LIST FUNCTIONS ======
-        function addGroceryItem(name, price) {
+        function addGroceryItem(name, quantity, price) {
             const newItem = {
                 id: Date.now(),
                 name: name,
+                quantity: quantity,
                 price: price,
                 date: new Date().toISOString(),
                 language: currentLanguage
@@ -908,6 +937,7 @@
                 li.innerHTML = `
                     <div class="item-details">
                         <div class="item-name">${item.name}</div>
+                        <div class="item-quantity">${item.quantity}</div>
                         <div class="item-price">${item.price.toFixed(2)} ${currentLanguage === 'ar' ? 'يورو' : 'EUR'}</div>
                         <div class="item-date">${dateStr}</div>
                     </div>
@@ -973,10 +1003,14 @@
             const newName = prompt(currentLanguage === 'ar' ? 'اسم جديد:' : 'New name:', item.name);
             if (newName === null) return;
             
+            const newQuantity = prompt(currentLanguage === 'ar' ? 'الكمية الجديدة:' : 'New quantity:', item.quantity);
+            if (newQuantity === null) return;
+            
             const newPrice = parseFloat(prompt(currentLanguage === 'ar' ? 'السعر الجديد:' : 'New price:', item.price));
             if (isNaN(newPrice)) return;
             
             item.name = newName;
+            item.quantity = newQuantity;
             item.price = newPrice;
             saveGroceries();
             updateGroceryList();
