@@ -72,7 +72,7 @@
             --radius-xl: 16px;
             --radius-full: 9999px;
             
-            /* Current Theme Variables (will be set by JS) */
+            /* Current Theme Variables */
             --bg-color: var(--light-bg);
             --card-color: var(--light-card);
             --text-color: var(--light-text);
@@ -81,7 +81,6 @@
             --hover-color: var(--light-hover);
         }
 
-        /* Base Styles */
         * {
             box-sizing: border-box;
             margin: 0;
@@ -93,8 +92,6 @@
             background-color: var(--bg-color);
             color: var(--text-color);
             transition: all 0.3s ease;
-            margin: 0;
-            padding: 0;
             min-height: 100vh;
             line-height: 1.5;
         }
@@ -114,13 +111,11 @@
             color: var(--text-secondary);
         }
         
-        /* Layout */
         .app-container {
             display: flex;
             min-height: 100vh;
         }
         
-        /* Sidebar */
         .sidebar {
             width: 320px;
             background-color: var(--card-color);
@@ -140,7 +135,6 @@
             width: 100%;
         }
         
-        /* Header */
         .app-header {
             display: flex;
             justify-content: space-between;
@@ -154,7 +148,6 @@
             gap: var(--space-sm);
         }
         
-        /* Buttons */
         .btn {
             display: inline-flex;
             align-items: center;
@@ -201,6 +194,15 @@
             background-color: var(--hover-color);
         }
         
+        .btn-danger {
+            background-color: var(--danger);
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            background-color: #e53e3e;
+        }
+        
         .btn-sm {
             padding: var(--space-xs) var(--space-sm);
             font-size: var(--text-sm);
@@ -213,7 +215,6 @@
             border-radius: var(--radius-full);
         }
         
-        /* Voice Input */
         .voice-section {
             text-align: center;
             margin-bottom: var(--space-xl);
@@ -235,6 +236,11 @@
             font-weight: 600;
         }
         
+        .voice-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+        
         .voice-btn.listening {
             background: var(--secondary);
             animation: pulse 1.5s infinite;
@@ -252,7 +258,6 @@
             100% { transform: scale(1); }
         }
         
-        /* Input */
         .input-section {
             margin-bottom: var(--space-xl);
         }
@@ -279,7 +284,6 @@
             box-shadow: 0 0 0 3px rgba(108, 99, 255, 0.2);
         }
         
-        /* Grocery List */
         .grocery-list {
             list-style: none;
             padding: 0;
@@ -335,7 +339,6 @@
             gap: var(--space-xs);
         }
         
-        /* Total Card */
         .total-card {
             background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
             color: white;
@@ -352,7 +355,6 @@
             margin: var(--space-sm) 0;
         }
         
-        /* Notes Section */
         .notes-section {
             background: var(--card-color);
             border-radius: var(--radius-md);
@@ -389,7 +391,6 @@
             word-break: break-word;
         }
         
-        /* Month Selector */
         .month-selector {
             background: var(--card-color);
             border-radius: var(--radius-md);
@@ -407,12 +408,17 @@
             font-family: inherit;
         }
         
-        /* Voice History */
         .voice-history {
             background: var(--card-color);
             border-radius: var(--radius-md);
             padding: var(--space-md);
             box-shadow: var(--shadow-sm);
+        }
+        
+        .history-actions {
+            display: flex;
+            justify-content: flex-end;
+            margin-bottom: var(--space-sm);
         }
         
         .history-list {
@@ -427,20 +433,25 @@
             padding: var(--space-sm);
             border-radius: var(--radius-sm);
             background-color: var(--hover-color);
+            display: flex;
+            align-items: center;
+            gap: var(--space-sm);
+        }
+        
+        .history-content {
+            flex: 1;
         }
         
         .history-text {
             margin-top: var(--space-xs);
         }
         
-        /* Empty States */
         .empty-state {
             text-align: center;
             padding: var(--space-lg);
             color: var(--text-secondary);
         }
         
-        /* Dark Mode Overrides */
         body.dark-mode {
             --bg-color: var(--dark-bg);
             --card-color: var(--dark-card);
@@ -450,7 +461,6 @@
             --hover-color: var(--dark-hover);
         }
         
-        /* Language Specific */
         [lang="en"] {
             font-family: 'Poppins', sans-serif;
             direction: ltr;
@@ -465,7 +475,6 @@
             transform: translateX(5px);
         }
         
-        /* Responsive */
         @media (max-width: 1024px) {
             .app-container {
                 flex-direction: column;
@@ -498,7 +507,6 @@
             }
         }
         
-        /* Animations */
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
@@ -506,15 +514,6 @@
         
         .fade-in {
             animation: fadeIn 0.3s ease forwards;
-        }
-        
-        /* Error Message */
-        .error-message {
-            color: var(--danger);
-            font-size: var(--text-sm);
-            margin-top: var(--space-xs);
-            text-align: center;
-            animation: fadeIn 0.3s ease;
         }
     </style>
 </head>
@@ -538,7 +537,6 @@
                     <i class="fas fa-microphone"></i> <span id="voiceButtonText">تحدث لإضافة عنصر</span>
                 </button>
                 <p id="voiceStatus" class="voice-status">اضغط على الزر وتحدث بوضوح</p>
-                <p id="voiceError" class="error-message" style="display: none;"></p>
             </div>
 
             <div class="input-section">
@@ -575,6 +573,11 @@
             </div>
 
             <div class="voice-history">
+                <div class="history-actions">
+                    <button id="clearHistoryBtn" class="btn btn-sm btn-outline">
+                        <i class="fas fa-trash"></i> <span id="clearHistoryText">مسح الكل</span>
+                    </button>
+                </div>
                 <h3 id="historyTitle">سجل الأصوات</h3>
                 <div class="history-list" id="voiceHistory"></div>
             </div>
@@ -588,72 +591,56 @@
         let voiceHistory = JSON.parse(localStorage.getItem('voiceHistory')) || [];
         let isDarkMode = localStorage.getItem('darkMode') === 'true';
         let currentLanguage = localStorage.getItem('language') || 'ar';
-        let currentMonthFilter = 'current'; // 'current' or 'YYYY-MM'
+        let currentMonthFilter = 'current';
+        let lastUpdateMonth = localStorage.getItem('lastUpdateMonth') || getCurrentMonthYear();
 
         // ====== DOM ELEMENTS ======
         const elements = {
-            // Main elements
             appTitle: document.getElementById('appTitle'),
-            mainContent: document.getElementById('mainContent'),
-            
-            // Theme/Language
             themeToggle: document.getElementById('themeToggle'),
             themeText: document.getElementById('themeText'),
             languageToggle: document.getElementById('languageToggle'),
             languageText: document.getElementById('languageText'),
-            
-            // Voice
             micButton: document.getElementById('micButton'),
             voiceButtonText: document.getElementById('voiceButtonText'),
             voiceStatus: document.getElementById('voiceStatus'),
-            voiceError: document.getElementById('voiceError'),
-            
-            // Input
             manualInput: document.getElementById('manualInput'),
             addButton: document.getElementById('addButton'),
-            
-            // Grocery list
             groceryTitle: document.getElementById('groceryTitle'),
             groceryList: document.getElementById('groceryList'),
-            
-            // Total
             totalText: document.getElementById('totalText'),
             totalAmount: document.getElementById('totalAmount'),
             monthText: document.getElementById('monthText'),
             currency: document.getElementById('currency'),
-            
-            // Notes
             notesTitle: document.getElementById('notesTitle'),
             notesList: document.getElementById('notesList'),
             addNoteBtn: document.getElementById('addNoteBtn'),
-            
-            // Month selector
             monthTitle: document.getElementById('monthTitle'),
             monthSelect: document.getElementById('monthSelect'),
-            
-            // Voice history
             historyTitle: document.getElementById('historyTitle'),
-            voiceHistory: document.getElementById('voiceHistory')
+            voiceHistory: document.getElementById('voiceHistory'),
+            clearHistoryBtn: document.getElementById('clearHistoryBtn'),
+            clearHistoryText: document.getElementById('clearHistoryText')
         };
 
-        // ====== INITIAL SETUP ======
+        // ====== UTILITY FUNCTIONS ======
+        function getCurrentMonthYear() {
+            const now = new Date();
+            return `${now.getFullYear()}-${now.getMonth()}`;
+        }
+
+        // ====== INITIALIZATION ======
         function initApp() {
-            // Set theme
             setTheme(isDarkMode);
-            
-            // Set language
             setLanguage(currentLanguage);
-            
-            // Initialize voice recognition
             initVoiceRecognition();
             
-            // Load data
             updateGroceryList();
             updateNotesList();
             updateVoiceHistory();
             populateMonthSelector();
             
-            // Event listeners
+            initMonthChecker();
             setupEventListeners();
         }
 
@@ -665,64 +652,77 @@
             if (darkMode) {
                 document.body.classList.add('dark-mode');
                 elements.themeText.textContent = currentLanguage === 'ar' ? 'وضع النهار' : 'Light Mode';
-                elements.themeToggle.innerHTML = '<i class="fas fa-sun"></i> ' + elements.themeText.textContent;
             } else {
                 document.body.classList.remove('dark-mode');
                 elements.themeText.textContent = currentLanguage === 'ar' ? 'وضع الليل' : 'Dark Mode';
-                elements.themeToggle.innerHTML = '<i class="fas fa-moon"></i> ' + elements.themeText.textContent;
             }
+            elements.themeToggle.innerHTML = `<i class="fas ${darkMode ? 'fa-sun' : 'fa-moon'}"></i> ${elements.themeText.textContent}`;
         }
 
         // ====== LANGUAGE MANAGEMENT ======
         function setLanguage(lang) {
             currentLanguage = lang;
             localStorage.setItem('language', lang);
-            
             document.documentElement.lang = lang;
             document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
             
             // Update all text elements
-            if (lang === 'ar') {
-                // Arabic text
-                elements.appTitle.textContent = 'متتبع البقالة بالذكاء الاصطناعي';
-                elements.voiceButtonText.textContent = 'تحدث لإضافة عنصر';
-                elements.voiceStatus.textContent = 'اضغط على الزر وتحدث بوضوح';
-                elements.manualInput.placeholder = 'مثال: 2 كيلو طماطم بـ 3.5 يورو';
-                elements.addButton.textContent = 'إضافة';
-                elements.groceryTitle.textContent = 'قائمة المشتريات';
-                elements.totalText.textContent = 'إجمالي المشتريات';
-                elements.monthText.textContent = 'لهذا الشهر';
-                elements.currency.textContent = 'يورو';
-                elements.notesTitle.textContent = 'الملاحظات';
-                elements.monthTitle.textContent = 'عرض حسب الشهر';
-                elements.historyTitle.textContent = 'سجل الأصوات';
-                elements.languageText.textContent = 'English';
-                elements.themeText.textContent = isDarkMode ? 'وضع النهار' : 'وضع الليل';
-                elements.themeToggle.innerHTML = isDarkMode ? 
-                    '<i class="fas fa-sun"></i> وضع النهار' : 
-                    '<i class="fas fa-moon"></i> وضع الليل';
-            } else {
-                // English text
-                elements.appTitle.textContent = 'AI Grocery Tracker';
-                elements.voiceButtonText.textContent = 'Speak to add item';
-                elements.voiceStatus.textContent = 'Press the button and speak clearly';
-                elements.manualInput.placeholder = 'Example: 2kg tomatoes for 3.5 euros';
-                elements.addButton.textContent = 'Add';
-                elements.groceryTitle.textContent = 'Grocery List';
-                elements.totalText.textContent = 'Total Spending';
-                elements.monthText.textContent = 'This Month';
-                elements.currency.textContent = 'EUR';
-                elements.notesTitle.textContent = 'Notes';
-                elements.monthTitle.textContent = 'View by Month';
-                elements.historyTitle.textContent = 'Voice History';
-                elements.languageText.textContent = 'العربية';
-                elements.themeText.textContent = isDarkMode ? 'Light Mode' : 'Dark Mode';
-                elements.themeToggle.innerHTML = isDarkMode ? 
-                    '<i class="fas fa-sun"></i> Light Mode' : 
-                    '<i class="fas fa-moon"></i> Dark Mode';
-            }
+            const translations = {
+                ar: {
+                    appTitle: 'متتبع البقالة بالذكاء الاصطناعي',
+                    voiceButtonText: 'تحدث لإضافة عنصر',
+                    voiceStatus: 'اضغط على الزر وتحدث بوضوح',
+                    manualInputPlaceholder: 'مثال: 2 كيلو طماطم بـ 3.5 يورو',
+                    addButton: 'إضافة',
+                    groceryTitle: 'قائمة المشتريات',
+                    totalText: 'إجمالي المشتريات',
+                    monthText: 'لهذا الشهر',
+                    currency: 'يورو',
+                    notesTitle: 'الملاحظات',
+                    monthTitle: 'عرض حسب الشهر',
+                    historyTitle: 'سجل الأصوات',
+                    languageText: 'English',
+                    themeText: isDarkMode ? 'وضع النهار' : 'وضع الليل',
+                    clearHistoryText: 'مسح الكل'
+                },
+                en: {
+                    appTitle: 'AI Grocery Tracker',
+                    voiceButtonText: 'Speak to add item',
+                    voiceStatus: 'Press the button and speak clearly',
+                    manualInputPlaceholder: 'Example: 2kg tomatoes for 3.5 euros',
+                    addButton: 'Add',
+                    groceryTitle: 'Grocery List',
+                    totalText: 'Total Spending',
+                    monthText: 'This Month',
+                    currency: 'EUR',
+                    notesTitle: 'Notes',
+                    monthTitle: 'View by Month',
+                    historyTitle: 'Voice History',
+                    languageText: 'العربية',
+                    themeText: isDarkMode ? 'Light Mode' : 'Dark Mode',
+                    clearHistoryText: 'Clear All'
+                }
+            };
             
-            // Refresh lists to update language
+            const t = translations[lang];
+            elements.appTitle.textContent = t.appTitle;
+            elements.voiceButtonText.textContent = t.voiceButtonText;
+            elements.voiceStatus.textContent = t.voiceStatus;
+            elements.manualInput.placeholder = t.manualInputPlaceholder;
+            elements.addButton.textContent = t.addButton;
+            elements.groceryTitle.textContent = t.groceryTitle;
+            elements.totalText.textContent = t.totalText;
+            elements.monthText.textContent = t.monthText;
+            elements.currency.textContent = t.currency;
+            elements.notesTitle.textContent = t.notesTitle;
+            elements.monthTitle.textContent = t.monthTitle;
+            elements.historyTitle.textContent = t.historyTitle;
+            elements.languageText.textContent = t.languageText;
+            elements.themeText.textContent = t.themeText;
+            elements.clearHistoryText.textContent = t.clearHistoryText;
+            
+            elements.themeToggle.innerHTML = `<i class="fas ${isDarkMode ? 'fa-sun' : 'fa-moon'}"></i> ${t.themeText}`;
+            
             updateGroceryList();
             updateNotesList();
             updateVoiceHistory();
@@ -751,16 +751,13 @@
                 elements.voiceStatus.textContent = currentLanguage === 'ar' ? 
                     'يستمع الآن... تحدث' : 
                     'Listening... Speak now';
-                elements.voiceError.style.display = 'none';
             };
             
             recognition.onend = () => {
                 elements.micButton.classList.remove('listening');
-                if (elements.voiceError.style.display === 'none') {
-                    elements.voiceStatus.textContent = currentLanguage === 'ar' ? 
-                        'اضغط على الزر وتحدث بوضوح' : 
-                        'Press the button and speak clearly';
-                }
+                elements.voiceStatus.textContent = currentLanguage === 'ar' ? 
+                    'اضغط على الزر وتحدث بوضوح' : 
+                    'Press the button and speak clearly';
             };
             
             recognition.onresult = (event) => {
@@ -768,7 +765,6 @@
                 const bestMatch = results[0].transcript;
                 const confidence = results[0].confidence;
                 
-                // Save to voice history
                 voiceHistory.unshift({
                     text: bestMatch,
                     language: currentLanguage,
@@ -780,39 +776,14 @@
                 localStorage.setItem('voiceHistory', JSON.stringify(voiceHistory));
                 updateVoiceHistory();
                 
-                // Process the voice command
                 processVoiceCommand(bestMatch);
             };
             
             recognition.onerror = (event) => {
                 console.error('Voice recognition error:', event.error);
-                let errorMessage;
-                
-                switch(event.error) {
-                    case 'no-speech':
-                        errorMessage = currentLanguage === 'ar' ? 
-                            'لم يتم الكشف عن أي كلام. حاول مرة أخرى' : 
-                            'No speech was detected. Try again';
-                        break;
-                    case 'audio-capture':
-                        errorMessage = currentLanguage === 'ar' ? 
-                            'لا يمكن الوصول إلى الميكروفون. تأكد من السماح بالوصول' : 
-                            'Microphone not accessible. Please check permissions';
-                        break;
-                    case 'not-allowed':
-                        errorMessage = currentLanguage === 'ar' ? 
-                            'تم رفض الوصول إلى الميكروفون. يرجى السماح بالوصول' : 
-                            'Microphone access denied. Please allow access';
-                        break;
-                    default:
-                        errorMessage = currentLanguage === 'ar' ? 
-                            'حدث خطأ في التعرف الصوتي. حاول مرة أخرى' : 
-                            'Voice recognition error occurred. Try again';
-                }
-                
-                elements.voiceError.textContent = errorMessage;
-                elements.voiceError.style.display = 'block';
-                elements.voiceStatus.style.display = 'none';
+                elements.voiceStatus.textContent = currentLanguage === 'ar' ? 
+                    'خطأ في التعرف الصوتي. حاول مرة أخرى' : 
+                    'Voice recognition error. Try again';
             };
             
             return recognition;
@@ -823,78 +794,51 @@
         function processVoiceCommand(text) {
             elements.manualInput.value = text;
             
-            // Try to extract item, quantity and price
-            let itemName, quantity = 1, price = 0;
+            let itemName, quantity = '1', price = 0;
             
             if (currentLanguage === 'ar') {
-                // Improved Arabic price parsing (handles "3 يورو و50" → 3.50)
-                const priceMatch = text.match(/(\d+)\s*(يورو|ريال|دولار|جنيها?|ليرة?)(?:\s*و\s*(\d+))?/);
-                if (priceMatch) {
-                    price = parseFloat(priceMatch[1].replace(',', '.'));
-                    if (priceMatch[3]) {
-                        const cents = priceMatch[3].padEnd(2, '0').substring(0, 2);
-                        price += parseFloat(`0.${cents}`);
-                    }
-                }
+                const priceMatch = text.match(/(\d+[,.]?\d*)\s*(يورو|ريال|دولار|جنيها?|ليرة?)/);
+                price = priceMatch ? parseFloat(priceMatch[1].replace(',', '.')) : 0;
                 
-                // Improved quantity parsing with standardized units
-                const quantityMatch = text.match(/(\d+[,.]?\d*)\s*(كيلو|كجم|جرام|غرام|لتر|علبة|حبة|قطعة|كيس|عبوة|زجاجة)/);
+                const quantityMatch = text.match(/(\d+[,.]?\d*)\s*(كيلو|كجم|جرام|لتر|علبة|حبة|قطعة|كيس)/);
                 if (quantityMatch) {
                     quantity = parseFloat(quantityMatch[1].replace(',', '.'));
                     const unit = quantityMatch[2];
                     
-                    // Standardize units
                     if (unit === 'كيلو' || unit === 'كجم') {
                         quantity = quantity + ' كجم';
-                    } else if (unit === 'جرام' || unit === 'غرام') {
+                    } else if (unit === 'جرام') {
                         quantity = quantity + ' جم';
-                    } else if (unit === 'لتر') {
-                        quantity = quantity + ' لتر';
                     } else {
                         quantity = quantity + ' ' + unit;
                     }
                 }
                 
-                // Extract item name (remove quantity and price)
                 itemName = text
-                    .replace(/(\d+)\s*(يورو|ريال|دولار|جنيها?|ليرة?)(?:\s*و\s*(\d+))?/, '')
-                    .replace(/(\d+[,.]?\d*)\s*(كيلو|كجم|جرام|غرام|لتر|علبة|حبة|قطعة|كيس|عبوة|زجاجة)/, '')
-                    .replace(/\s{2,}/g, ' ')
+                    .replace(/(\d+[,.]?\d*)\s*(يورو|ريال|دولار|جنيها?|ليرة?)/, '')
+                    .replace(/(\d+[,.]?\d*)\s*(كيلو|كجم|جرام|لتر|علبة|حبة|قطعة|كيس)/, '')
                     .trim();
             } else {
-                // Improved English price parsing (handles "5 euros 37" → 5.37)
-                const priceMatch = text.match(/(\d+)\s*(euros?|dollars?|pounds?|USD|EUR)(?:\s*(\d+))?/);
-                if (priceMatch) {
-                    price = parseFloat(priceMatch[1].replace(',', '.'));
-                    if (priceMatch[3]) {
-                        const cents = priceMatch[3].padEnd(2, '0').substring(0, 2);
-                        price += parseFloat(`0.${cents}`);
-                    }
-                }
+                const priceMatch = text.match(/(\d+[,.]?\d*)\s*(euros?|dollars?|pounds?|USD|EUR)/);
+                price = priceMatch ? parseFloat(priceMatch[1].replace(',', '.')) : 0;
                 
-                // Improved quantity parsing with standardized units
-                const quantityMatch = text.match(/(\d+[,.]?\d*)\s*(kg|kilo|kilos|grams?|g|liters?|l|bottles?|pieces?|bags?|packets?|boxes?)/);
+                const quantityMatch = text.match(/(\d+[,.]?\d*)\s*(kg|kilo|kilos|grams?|liters?|bottles?|pieces?|bags?)/);
                 if (quantityMatch) {
                     quantity = parseFloat(quantityMatch[1].replace(',', '.'));
                     const unit = quantityMatch[2];
                     
-                    // Standardize units
                     if (unit === 'kg' || unit === 'kilo' || unit === 'kilos') {
                         quantity = quantity + ' kg';
-                    } else if (unit === 'grams' || unit === 'gram' || unit === 'g') {
+                    } else if (unit === 'grams' || unit === 'gram') {
                         quantity = quantity + ' g';
-                    } else if (unit === 'liters' || unit === 'liter' || unit === 'l') {
-                        quantity = quantity + ' L';
                     } else {
                         quantity = quantity + ' ' + unit;
                     }
                 }
                 
-                // Extract item name (remove quantity and price)
                 itemName = text
-                    .replace(/(\d+)\s*(euros?|dollars?|pounds?|USD|EUR)(?:\s*(\d+))?/, '')
-                    .replace(/(\d+[,.]?\d*)\s*(kg|kilo|kilos|grams?|g|liters?|l|bottles?|pieces?|bags?|packets?|boxes?)/, '')
-                    .replace(/\s{2,}/g, ' ')
+                    .replace(/(\d+[,.]?\d*)\s*(euros?|dollars?|pounds?|USD|EUR)/, '')
+                    .replace(/(\d+[,.]?\d*)\s*(kg|kilo|kilos|grams?|liters?|bottles?|pieces?|bags?)/, '')
                     .trim();
             }
             
@@ -902,7 +846,6 @@
                 itemName = currentLanguage === 'ar' ? 'سلعة غير معروفة' : 'Unknown item';
             }
             
-            // Always add to grocery list, even if price is 0 (user can edit later)
             addGroceryItem(itemName, quantity, price);
         }
 
@@ -922,7 +865,6 @@
             updateGroceryList();
             elements.manualInput.value = '';
             
-            // Show success feedback
             const btn = elements.addButton;
             btn.innerHTML = currentLanguage === 'ar' ? 
                 '<i class="fas fa-check"></i> تمت الإضافة' : 
@@ -944,25 +886,15 @@
         function updateGroceryList() {
             elements.groceryList.innerHTML = '';
             
-            let filteredItems = [];
-            
-            if (currentMonthFilter === 'current') {
-                const currentMonth = new Date().getMonth();
-                const currentYear = new Date().getFullYear();
-                
-                filteredItems = groceries.filter(item => {
+            let filteredItems = currentMonthFilter === 'current' ? 
+                groceries.filter(item => {
                     const itemDate = new Date(item.date);
-                    return itemDate.getMonth() === currentMonth && 
-                           itemDate.getFullYear() === currentYear;
-                });
-            } else {
-                const [year, month] = currentMonthFilter.split('-');
-                filteredItems = groceries.filter(item => {
+                    return `${itemDate.getFullYear()}-${itemDate.getMonth()}` === getCurrentMonthYear();
+                }) : 
+                groceries.filter(item => {
                     const itemDate = new Date(item.date);
-                    return itemDate.getFullYear() == year && 
-                           itemDate.getMonth() == month;
+                    return `${itemDate.getFullYear()}-${itemDate.getMonth()}` === currentMonthFilter;
                 });
-            }
             
             if (filteredItems.length === 0) {
                 const emptyMsg = currentLanguage === 'ar' ? 
@@ -1009,29 +941,17 @@
 
         function updateTotal() {
             let total = 0;
-            
-            if (currentMonthFilter === 'current') {
-                const currentMonth = new Date().getMonth();
-                const currentYear = new Date().getFullYear();
-                
-                total = groceries.reduce((sum, item) => {
+            const filteredItems = currentMonthFilter === 'current' ? 
+                groceries.filter(item => {
                     const itemDate = new Date(item.date);
-                    if (itemDate.getMonth() === currentMonth && itemDate.getFullYear() === currentYear) {
-                        return sum + item.price;
-                    }
-                    return sum;
-                }, 0);
-            } else {
-                const [year, month] = currentMonthFilter.split('-');
-                total = groceries.reduce((sum, item) => {
+                    return `${itemDate.getFullYear()}-${itemDate.getMonth()}` === getCurrentMonthYear();
+                }) : 
+                groceries.filter(item => {
                     const itemDate = new Date(item.date);
-                    if (itemDate.getFullYear() == year && itemDate.getMonth() == month) {
-                        return sum + item.price;
-                    }
-                    return sum;
-                }, 0);
-            }
+                    return `${itemDate.getFullYear()}-${itemDate.getMonth()}` === currentMonthFilter;
+                });
             
+            total = filteredItems.reduce((sum, item) => sum + item.price, 0);
             elements.totalAmount.textContent = total.toFixed(2);
         }
 
@@ -1135,10 +1055,20 @@
         function updateVoiceHistory() {
             elements.voiceHistory.innerHTML = '';
             
-            if (voiceHistory.length === 0) {
+            const filteredHistory = currentMonthFilter === 'current' ? 
+                voiceHistory.filter(item => {
+                    const itemDate = new Date(item.timestamp);
+                    return `${itemDate.getFullYear()}-${itemDate.getMonth()}` === getCurrentMonthYear();
+                }) : 
+                voiceHistory.filter(item => {
+                    const itemDate = new Date(item.timestamp);
+                    return `${itemDate.getFullYear()}-${itemDate.getMonth()}` === currentMonthFilter;
+                });
+            
+            if (filteredHistory.length === 0) {
                 const emptyMsg = currentLanguage === 'ar' ? 
-                    'لا توجد تسجيلات صوتية سابقة' : 
-                    'No voice recordings yet';
+                    'لا توجد تسجيلات لهذا الشهر' : 
+                    'No recordings for this month';
                 const emptyEl = document.createElement('div');
                 emptyEl.className = 'empty-state';
                 emptyEl.textContent = emptyMsg;
@@ -1146,7 +1076,7 @@
                 return;
             }
             
-            voiceHistory.slice(0, 10).forEach(recording => {
+            filteredHistory.forEach(recording => {
                 const recEl = document.createElement('div');
                 recEl.className = 'history-item fade-in';
                 
@@ -1157,11 +1087,38 @@
                 );
                 
                 recEl.innerHTML = `
-                    <small>${dateStr} (${Math.round(recording.confidence * 100)}%)</small>
-                    <div class="history-text">${recording.text}</div>
+                    <div class="history-content">
+                        <small>${dateStr} (${Math.round(recording.confidence * 100)}%)</small>
+                        <div class="history-text">${recording.text}</div>
+                    </div>
+                    <button class="btn btn-danger btn-sm btn-icon" onclick="deleteHistoryItem('${recording.timestamp}')">
+                        <i class="fas fa-trash"></i>
+                    </button>
                 `;
                 elements.voiceHistory.appendChild(recEl);
             });
+        }
+
+        function deleteHistoryItem(timestamp) {
+            voiceHistory = voiceHistory.filter(item => item.timestamp !== timestamp);
+            localStorage.setItem('voiceHistory', JSON.stringify(voiceHistory));
+            updateVoiceHistory();
+        }
+
+        function clearAllHistory() {
+            const confirmMsg = currentLanguage === 'ar' ? 
+                'هل أنت متأكد من حذف كل السجل الصوتي لهذا الشهر؟' : 
+                'Are you sure you want to clear all voice history for this month?';
+            
+            if (confirm(confirmMsg)) {
+                const currentMonthYear = currentMonthFilter === 'current' ? getCurrentMonthYear() : currentMonthFilter;
+                voiceHistory = voiceHistory.filter(item => {
+                    const itemDate = new Date(item.timestamp);
+                    return `${itemDate.getFullYear()}-${itemDate.getMonth()}` !== currentMonthYear;
+                });
+                localStorage.setItem('voiceHistory', JSON.stringify(voiceHistory));
+                updateVoiceHistory();
+            }
         }
 
         // ====== MONTH SELECTOR FUNCTIONS ======
@@ -1175,16 +1132,18 @@
             currentOption.selected = currentMonthFilter === 'current';
             elements.monthSelect.appendChild(currentOption);
             
-            // Get unique months from groceries
+            // Get unique months from data
             const monthsMap = {};
-            groceries.forEach(item => {
-                const date = new Date(item.date);
+            const allItems = [...groceries, ...voiceHistory];
+            
+            allItems.forEach(item => {
+                const date = new Date(item.date || item.timestamp);
                 const monthYear = `${date.getFullYear()}-${date.getMonth()}`;
                 monthsMap[monthYear] = true;
             });
             
             // Add month options
-            Object.keys(monthsMap).sort().reverse().forEach(monthYear => {
+            Object.keys(monthsMap).sort((a, b) => b.localeCompare(a)).forEach(monthYear => {
                 const [year, month] = monthYear.split('-');
                 const monthName = new Date(year, month).toLocaleDateString(
                     currentLanguage === 'ar' ? 'ar-EG' : 'en-US', 
@@ -1202,16 +1161,36 @@
         function filterByMonth(monthYear) {
             currentMonthFilter = monthYear;
             updateGroceryList();
+            updateVoiceHistory();
+        }
+
+        // ====== MONTH CHECKER ======
+        function checkMonthChange() {
+            const currentMonthYear = getCurrentMonthYear();
+            
+            if (lastUpdateMonth !== currentMonthYear) {
+                lastUpdateMonth = currentMonthYear;
+                localStorage.setItem('lastUpdateMonth', currentMonthYear);
+                
+                if (currentMonthFilter === 'current') {
+                    updateGroceryList();
+                    updateVoiceHistory();
+                }
+                populateMonthSelector();
+            }
+        }
+
+        function initMonthChecker() {
+            checkMonthChange();
+            setInterval(checkMonthChange, 3600000); // Check every hour
         }
 
         // ====== EVENT LISTENERS ======
         function setupEventListeners() {
-            // Theme toggle
             elements.themeToggle.addEventListener('click', () => {
                 setTheme(!isDarkMode);
             });
             
-            // Language toggle
             elements.languageToggle.addEventListener('click', () => {
                 setLanguage(currentLanguage === 'ar' ? 'en' : 'ar');
                 if (recognition) {
@@ -1219,17 +1198,13 @@
                 }
             });
             
-            // Voice button
             if (recognition) {
                 elements.micButton.addEventListener('click', () => {
                     recognition.lang = currentLanguage === 'ar' ? 'ar-SA' : 'en-US';
                     recognition.start();
-                    elements.voiceStatus.style.display = 'block';
-                    elements.voiceError.style.display = 'none';
                 });
             }
             
-            // Manual input
             elements.addButton.addEventListener('click', () => {
                 if (elements.manualInput.value.trim() !== '') {
                     processVoiceCommand(elements.manualInput.value);
@@ -1242,22 +1217,24 @@
                 }
             });
             
-            // Add note button
             elements.addNoteBtn.addEventListener('click', () => {
                 addNote();
             });
             
-            // Month selector
             elements.monthSelect.addEventListener('change', (e) => {
                 filterByMonth(e.target.value);
             });
+            
+            elements.clearHistoryBtn.addEventListener('click', clearAllHistory);
         }
 
-        // ====== INITIALIZE APP ======
+        // ====== GLOBAL FUNCTIONS ======
         window.deleteGroceryItem = deleteGroceryItem;
         window.editGroceryItem = editGroceryItem;
         window.deleteNote = deleteNote;
+        window.deleteHistoryItem = deleteHistoryItem;
         
+        // ====== INITIALIZE APP ======
         document.addEventListener('DOMContentLoaded', initApp);
     </script>
 </body>
