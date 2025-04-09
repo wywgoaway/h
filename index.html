@@ -77,6 +77,16 @@
             --hover-color: var(--gray-50);
         }
 
+        /* Dark Mode Variables */
+        body.dark-mode {
+            --bg-color: var(--gray-900);
+            --card-color: var(--gray-800);
+            --text-color: var(--gray-100);
+            --text-secondary: var(--gray-400);
+            --border-color: var(--gray-700);
+            --hover-color: var(--gray-700);
+        }
+
         /* Base Styles */
         * {
             box-sizing: border-box;
@@ -100,7 +110,7 @@
         h1, h2, h3, h4 {
             font-weight: 600;
             margin-bottom: var(--space-md);
-            color: var(--gray-900);
+            color: var(--text-color);
         }
         
         h1 { font-size: var(--text-3xl); }
@@ -124,8 +134,8 @@
         
         /* Header */
         .app-header {
-            background: var(--white);
-            color: var(--gray-900);
+            background: var(--card-color);
+            color: var(--text-color);
             padding: var(--space-lg);
             display: flex;
             justify-content: space-between;
@@ -226,6 +236,16 @@
             justify-content: center;
         }
         
+        .btn-danger {
+            background-color: var(--danger-light);
+            color: var(--danger);
+        }
+        
+        .btn-danger:hover {
+            background-color: var(--danger);
+            color: white;
+        }
+        
         /* Stats Cards */
         .stats-grid {
             display: grid;
@@ -289,11 +309,18 @@
             padding: var(--space-md);
             border: 1px solid var(--border-color);
             transition: all 0.3s;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
         
         .recent-item:hover {
             transform: translateY(-2px);
             box-shadow: var(--shadow-sm);
+        }
+        
+        .item-details {
+            flex: 1;
         }
         
         .item-name {
@@ -306,6 +333,11 @@
             justify-content: space-between;
             color: var(--text-secondary);
             font-size: var(--text-sm);
+        }
+        
+        .item-actions {
+            display: flex;
+            gap: var(--space-xs);
         }
         
         /* Empty States */
@@ -339,7 +371,7 @@
         }
         
         .modal-content {
-            background: var(--white);
+            background: var(--card-color);
             border-radius: var(--radius-lg);
             width: 90%;
             max-width: 500px;
@@ -365,7 +397,7 @@
             border: none;
             font-size: var(--text-xl);
             cursor: pointer;
-            color: var(--gray-500);
+            color: var(--text-secondary);
         }
         
         .form-group {
@@ -376,6 +408,7 @@
             display: block;
             margin-bottom: var(--space-sm);
             font-weight: 500;
+            color: var(--text-color);
         }
         
         .form-group input, .form-group select {
@@ -384,6 +417,38 @@
             border: 1px solid var(--border-color);
             border-radius: var(--radius-md);
             font-family: inherit;
+            background-color: var(--card-color);
+            color: var(--text-color);
+        }
+        
+        /* View All Items Modal */
+        .all-items-container {
+            max-height: 60vh;
+            overflow-y: auto;
+            margin-bottom: var(--space-lg);
+        }
+        
+        .all-items-list {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-sm);
+        }
+        
+        .all-items-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: var(--space-sm);
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        /* Settings Modal */
+        .settings-option {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: var(--space-md) 0;
+            border-bottom: 1px solid var(--border-color);
         }
         
         /* Animations */
@@ -427,6 +492,9 @@
         <header class="app-header">
             <h1 class="header-title">Grocery Tracker</h1>
             <div class="header-actions">
+                <button class="btn btn-icon" id="themeToggle">
+                    <i class="fas fa-moon"></i>
+                </button>
                 <button class="btn btn-icon" id="notificationsBtn">
                     <i class="fas fa-bell"></i>
                 </button>
@@ -446,7 +514,7 @@
             <div class="card fade-in">
                 <div class="card-header">
                     <h3>Monthly Budget</h3>
-                    <small id="budgetRemainingText">$500 remaining</small>
+                    <small id="budgetRemainingText">€500 remaining</small>
                 </div>
                 <div class="progress-container">
                     <div class="progress-bar" id="budgetProgressBar"></div>
@@ -504,7 +572,7 @@
                     <input type="text" id="itemQuantity" placeholder="e.g. 2.5 kg" required>
                 </div>
                 <div class="form-group">
-                    <label for="itemPrice">Price</label>
+                    <label for="itemPrice">Price (€)</label>
                     <input type="number" id="itemPrice" placeholder="e.g. 3.75" step="0.01" required>
                 </div>
                 <div class="form-group">
@@ -525,10 +593,86 @@
         </div>
     </div>
 
+    <!-- View All Items Modal -->
+    <div class="modal" id="viewAllModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>All Grocery Items</h3>
+                <button class="modal-close" id="closeViewAllModalBtn">&times;</button>
+            </div>
+            <div class="all-items-container" id="allItemsContainer">
+                <!-- Filled dynamically by JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Notifications Modal -->
+    <div class="modal" id="notificationsModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Notifications</h3>
+                <button class="modal-close" id="closeNotificationsModalBtn">&times;</button>
+            </div>
+            <div class="empty-state">
+                <i class="fas fa-bell-slash" style="font-size: 2rem; margin-bottom: var(--space-md);"></i>
+                <p>No new notifications</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Settings Modal -->
+    <div class="modal" id="settingsModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Settings</h3>
+                <button class="modal-close" id="closeSettingsModalBtn">&times;</button>
+            </div>
+            <div class="form-group">
+                <label for="monthlyBudget">Monthly Budget (€)</label>
+                <input type="number" id="monthlyBudget" step="10" min="0">
+            </div>
+            <div class="form-group">
+                <label for="languageSelect">Language</label>
+                <select id="languageSelect">
+                    <option value="en">English</option>
+                    <option value="ar">العربية (Arabic)</option>
+                </select>
+            </div>
+            <div class="settings-option">
+                <span>Dark Mode</span>
+                <label class="switch">
+                    <input type="checkbox" id="darkModeToggle">
+                    <span class="slider round"></span>
+                </label>
+            </div>
+            <button class="btn btn-primary" style="width: 100%; margin-top: var(--space-lg);" id="saveSettingsBtn">Save Settings</button>
+        </div>
+    </div>
+
+    <!-- Profile Modal -->
+    <div class="modal" id="profileModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>User Profile</h3>
+                <button class="modal-close" id="closeProfileModalBtn">&times;</button>
+            </div>
+            <div class="empty-state">
+                <i class="fas fa-user-circle" style="font-size: 3rem; margin-bottom: var(--space-md); color: var(--primary);"></i>
+                <p>Guest User</p>
+                <small>Sign in to access your profile</small>
+            </div>
+        </div>
+    </div>
+
     <script>
         // ====== APP STATE ======
         let groceries = JSON.parse(localStorage.getItem('groceries')) || [];
-        let monthlyBudget = 500;
+        let settings = JSON.parse(localStorage.getItem('settings')) || {
+            monthlyBudget: 500,
+            currency: '€',
+            language: 'en',
+            darkMode: false
+        };
         
         // Sample data if empty
         if (groceries.length === 0) {
@@ -549,20 +693,38 @@
             budgetRemainingText: document.getElementById('budgetRemainingText'),
             budgetProgressBar: document.getElementById('budgetProgressBar'),
             recentItemsContainer: document.getElementById('recentItemsContainer'),
+            allItemsContainer: document.getElementById('allItemsContainer'),
             addItemModal: document.getElementById('addItemModal'),
+            viewAllModal: document.getElementById('viewAllModal'),
+            notificationsModal: document.getElementById('notificationsModal'),
+            settingsModal: document.getElementById('settingsModal'),
+            profileModal: document.getElementById('profileModal'),
             addItemForm: document.getElementById('addItemForm'),
             closeModalBtn: document.getElementById('closeModalBtn'),
+            closeViewAllModalBtn: document.getElementById('closeViewAllModalBtn'),
+            closeNotificationsModalBtn: document.getElementById('closeNotificationsModalBtn'),
+            closeSettingsModalBtn: document.getElementById('closeSettingsModalBtn'),
+            closeProfileModalBtn: document.getElementById('closeProfileModalBtn'),
             addItemBtn: document.getElementById('addItemBtn'),
             viewAllBtn: document.getElementById('viewAllBtn'),
             scanReceiptBtn: document.getElementById('scanReceiptBtn'),
             reportsBtn: document.getElementById('reportsBtn'),
             settingsBtn: document.getElementById('settingsBtn'),
             notificationsBtn: document.getElementById('notificationsBtn'),
-            profileBtn: document.getElementById('profileBtn')
+            profileBtn: document.getElementById('profileBtn'),
+            themeToggle: document.getElementById('themeToggle'),
+            monthlyBudgetInput: document.getElementById('monthlyBudget'),
+            languageSelect: document.getElementById('languageSelect'),
+            darkModeToggle: document.getElementById('darkModeToggle'),
+            saveSettingsBtn: document.getElementById('saveSettingsBtn')
         };
 
         // ====== INITIAL SETUP ======
         function initApp() {
+            // Apply saved settings
+            applySettings();
+            
+            // Update UI
             updateDashboard();
             setupEventListeners();
             
@@ -571,6 +733,45 @@
             cards.forEach((card, index) => {
                 card.style.animationDelay = `${index * 0.1}s`;
             });
+        }
+
+        // ====== SETTINGS FUNCTIONS ======
+        function applySettings() {
+            // Apply dark mode
+            if (settings.darkMode) {
+                document.body.classList.add('dark-mode');
+                elements.themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+            } else {
+                document.body.classList.remove('dark-mode');
+                elements.themeToggle.innerHTML = '<i class="fas fa-moon"></i>';
+            }
+            
+            // Set budget input
+            elements.monthlyBudgetInput.value = settings.monthlyBudget;
+            elements.darkModeToggle.checked = settings.darkMode;
+            elements.languageSelect.value = settings.language;
+        }
+
+        function saveSettings() {
+            settings.monthlyBudget = parseFloat(elements.monthlyBudgetInput.value) || 500;
+            settings.darkMode = elements.darkModeToggle.checked;
+            settings.language = elements.languageSelect.value;
+            
+            localStorage.setItem('settings', JSON.stringify(settings));
+            applySettings();
+            updateDashboard();
+            
+            // Close modal
+            closeModal(elements.settingsModal);
+            
+            // Show confirmation
+            alert('Settings saved successfully!');
+        }
+
+        function toggleDarkMode() {
+            settings.darkMode = !settings.darkMode;
+            localStorage.setItem('settings', JSON.stringify(settings));
+            applySettings();
         }
 
         // ====== DASHBOARD FUNCTIONS ======
@@ -604,11 +805,11 @@
             // Update stats cards
             elements.statsContainer.innerHTML = `
                 <div class="stat-card fade-in">
-                    <div class="stat-value">$${weeklyTotal.toFixed(2)}</div>
+                    <div class="stat-value">${settings.currency}${weeklyTotal.toFixed(2)}</div>
                     <div class="stat-label">This Week</div>
                 </div>
                 <div class="stat-card fade-in">
-                    <div class="stat-value">$${monthlyTotal.toFixed(2)}</div>
+                    <div class="stat-value">${settings.currency}${monthlyTotal.toFixed(2)}</div>
                     <div class="stat-label">This Month</div>
                 </div>
                 <div class="stat-card fade-in">
@@ -616,7 +817,7 @@
                     <div class="stat-label">Items Tracked</div>
                 </div>
                 <div class="stat-card fade-in">
-                    <div class="stat-value">$${(monthlyBudget - monthlyTotal).toFixed(2)}</div>
+                    <div class="stat-value">${settings.currency}${(settings.monthlyBudget - monthlyTotal).toFixed(2)}</div>
                     <div class="stat-label">Budget Remaining</div>
                 </div>
             `;
@@ -631,10 +832,10 @@
                 return itemDate >= startOfMonth ? total + item.price : total;
             }, 0);
             
-            const remaining = monthlyBudget - monthlyTotal;
-            const progressPercent = Math.min((monthlyTotal / monthlyBudget) * 100, 100);
+            const remaining = settings.monthlyBudget - monthlyTotal;
+            const progressPercent = Math.min((monthlyTotal / settings.monthlyBudget) * 100, 100);
             
-            elements.budgetRemainingText.textContent = `$${remaining.toFixed(2)} remaining`;
+            elements.budgetRemainingText.textContent = `${settings.currency}${remaining.toFixed(2)} remaining`;
             elements.budgetProgressBar.style.width = `${progressPercent}%`;
         }
 
@@ -655,27 +856,53 @@
             
             elements.recentItemsContainer.innerHTML = recentItems.map(item => `
                 <div class="recent-item">
-                    <div class="item-name">${item.name}</div>
-                    <div class="item-meta">
-                        <span>${item.quantity}</span>
-                        <span>$${item.price.toFixed(2)}</span>
+                    <div class="item-details">
+                        <div class="item-name">${item.name}</div>
+                        <div class="item-meta">
+                            <span>${item.quantity}</span>
+                            <span>${settings.currency}${item.price.toFixed(2)}</span>
+                        </div>
+                    </div>
+                    <div class="item-actions">
+                        <button class="btn btn-icon btn-danger" onclick="deleteItem(${item.id})">
+                            <i class="fas fa-trash"></i>
+                        </button>
                     </div>
                 </div>
             `).join('');
         }
 
-        // ====== MODAL FUNCTIONS ======
-        function openAddItemModal() {
-            elements.addItemModal.classList.add('active');
+        function updateAllItems() {
+            const allItems = [...groceries].sort((a, b) => new Date(b.date) - new Date(a.date));
+            
+            if (allItems.length === 0) {
+                elements.allItemsContainer.innerHTML = `
+                    <div class="empty-state">
+                        No items found. Add your first item!
+                    </div>
+                `;
+                return;
+            }
+            
+            elements.allItemsContainer.innerHTML = `
+                <div class="all-items-list">
+                    ${allItems.map(item => `
+                        <div class="all-items-item">
+                            <div>
+                                <div style="font-weight: 500;">${item.name}</div>
+                                <small style="color: var(--text-secondary);">${item.quantity} • ${settings.currency}${item.price.toFixed(2)}</small>
+                            </div>
+                            <button class="btn btn-icon btn-danger" onclick="deleteItem(${item.id})">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
         }
 
-        function closeAddItemModal() {
-            elements.addItemModal.classList.remove('active');
-            elements.addItemForm.reset();
-        }
-
-        // ====== EVENT HANDLERS ======
-        function handleAddItem(e) {
+        // ====== ITEM MANAGEMENT ======
+        function addItem(e) {
             e.preventDefault();
             
             const newItem = {
@@ -690,61 +917,89 @@
             groceries.unshift(newItem);
             localStorage.setItem('groceries', JSON.stringify(groceries));
             
-            closeAddItemModal();
+            closeModal(elements.addItemModal);
             updateDashboard();
             
             // Show success feedback
             alert(`${newItem.name} added successfully!`);
         }
 
-        function handleScanReceipt() {
-            alert("In a real app, this would open the camera for receipt scanning");
+        function deleteItem(id) {
+            if (confirm("Are you sure you want to delete this item?")) {
+                groceries = groceries.filter(item => item.id !== id);
+                localStorage.setItem('groceries', JSON.stringify(groceries));
+                updateDashboard();
+                
+                // If view all modal is open, update it too
+                if (elements.viewAllModal.classList.contains('active')) {
+                    updateAllItems();
+                }
+            }
         }
 
-        function handleViewAll() {
-            alert("In a full app, this would show all grocery items in a separate view");
+        // ====== MODAL FUNCTIONS ======
+        function openModal(modal) {
+            modal.classList.add('active');
+            
+            // Special setup for specific modals
+            if (modal === elements.viewAllModal) {
+                updateAllItems();
+            }
         }
 
-        function handleReports() {
-            alert("In a full app, this would show spending reports and analytics");
-        }
-
-        function handleSettings() {
-            alert("In a full app, this would open settings");
-        }
-
-        function handleNotifications() {
-            alert("In a full app, this would show notifications");
-        }
-
-        function handleProfile() {
-            alert("In a full app, this would open user profile");
+        function closeModal(modal) {
+            modal.classList.remove('active');
+            
+            // Reset forms if needed
+            if (modal === elements.addItemModal) {
+                elements.addItemForm.reset();
+            }
         }
 
         // ====== EVENT LISTENERS ======
         function setupEventListeners() {
-            // Modal
-            elements.addItemBtn.addEventListener('click', openAddItemModal);
-            elements.closeModalBtn.addEventListener('click', closeAddItemModal);
-            elements.addItemForm.addEventListener('submit', handleAddItem);
+            // Modals
+            elements.addItemBtn.addEventListener('click', () => openModal(elements.addItemModal));
+            elements.viewAllBtn.addEventListener('click', () => openModal(elements.viewAllModal));
+            elements.notificationsBtn.addEventListener('click', () => openModal(elements.notificationsModal));
+            elements.settingsBtn.addEventListener('click', () => openModal(elements.settingsModal));
+            elements.profileBtn.addEventListener('click', () => openModal(elements.profileModal));
+            
+            // Close buttons
+            elements.closeModalBtn.addEventListener('click', () => closeModal(elements.addItemModal));
+            elements.closeViewAllModalBtn.addEventListener('click', () => closeModal(elements.viewAllModal));
+            elements.closeNotificationsModalBtn.addEventListener('click', () => closeModal(elements.notificationsModal));
+            elements.closeSettingsModalBtn.addEventListener('click', () => closeModal(elements.settingsModal));
+            elements.closeProfileModalBtn.addEventListener('click', () => closeModal(elements.profileModal));
             
             // Click outside modal to close
-            elements.addItemModal.addEventListener('click', (e) => {
-                if (e.target === elements.addItemModal) {
-                    closeAddItemModal();
-                }
+            document.querySelectorAll('.modal').forEach(modal => {
+                modal.addEventListener('click', (e) => {
+                    if (e.target === modal) {
+                        closeModal(modal);
+                    }
+                });
             });
             
-            // Quick actions
-            elements.scanReceiptBtn.addEventListener('click', handleScanReceipt);
-            elements.viewAllBtn.addEventListener('click', handleViewAll);
-            elements.reportsBtn.addEventListener('click', handleReports);
-            elements.settingsBtn.addEventListener('click', handleSettings);
+            // Forms
+            elements.addItemForm.addEventListener('submit', addItem);
+            elements.saveSettingsBtn.addEventListener('click', saveSettings);
             
-            // Header buttons
-            elements.notificationsBtn.addEventListener('click', handleNotifications);
-            elements.profileBtn.addEventListener('click', handleProfile);
+            // Theme toggle
+            elements.themeToggle.addEventListener('click', toggleDarkMode);
+            
+            // Quick actions
+            elements.scanReceiptBtn.addEventListener('click', () => {
+                alert("Receipt scanning would be implemented in a full app");
+            });
+            
+            elements.reportsBtn.addEventListener('click', () => {
+                alert("Reports would show spending analytics in a full app");
+            });
         }
+
+        // Make functions available globally
+        window.deleteItem = deleteItem;
 
         // ====== INITIALIZE APP ======
         document.addEventListener('DOMContentLoaded', initApp);
