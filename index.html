@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Modern Grocery Tracker</title>
+    <title>Modern Health Dashboard</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -237,13 +237,21 @@
         }
         
         .btn-danger {
-            background-color: var(--danger-light);
+            background-color: transparent;
             color: var(--danger);
         }
         
         .btn-danger:hover {
-            background-color: var(--danger);
-            color: white;
+            background-color: var(--danger-light);
+        }
+        
+        .btn-edit {
+            background-color: transparent;
+            color: var(--info);
+        }
+        
+        .btn-edit:hover {
+            background-color: var(--info-light);
         }
         
         /* Stats Cards */
@@ -340,6 +348,58 @@
             gap: var(--space-xs);
         }
         
+        /* Shopping List */
+        .shopping-list {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-sm);
+            margin-top: var(--space-md);
+        }
+        
+        .shopping-item {
+            display: flex;
+            align-items: center;
+            padding: var(--space-sm);
+            border-radius: var(--radius-md);
+            background-color: var(--hover-color);
+        }
+        
+        .shopping-item input[type="checkbox"] {
+            margin-right: var(--space-sm);
+        }
+        
+        .shopping-item label {
+            flex: 1;
+            cursor: pointer;
+        }
+        
+        .shopping-item.completed label {
+            text-decoration: line-through;
+            color: var(--text-secondary);
+        }
+        
+        /* Notes Section */
+        .notes-container {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-sm);
+            margin-top: var(--space-md);
+        }
+        
+        .note-item {
+            background: var(--hover-color);
+            padding: var(--space-md);
+            border-radius: var(--radius-md);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .note-text {
+            flex: 1;
+            word-break: break-word;
+        }
+        
         /* Empty States */
         .empty-state {
             text-align: center;
@@ -379,6 +439,8 @@
             box-shadow: var(--shadow-xl);
             transform: translateY(20px);
             transition: transform 0.3s ease;
+            max-height: 90vh;
+            overflow-y: auto;
         }
         
         .modal.active .modal-content {
@@ -411,7 +473,7 @@
             color: var(--text-color);
         }
         
-        .form-group input, .form-group select {
+        .form-group input, .form-group select, .form-group textarea {
             width: 100%;
             padding: var(--space-md);
             border: 1px solid var(--border-color);
@@ -419,6 +481,11 @@
             font-family: inherit;
             background-color: var(--card-color);
             color: var(--text-color);
+        }
+        
+        .form-group textarea {
+            min-height: 100px;
+            resize: vertical;
         }
         
         /* View All Items Modal */
@@ -451,10 +518,97 @@
             border-bottom: 1px solid var(--border-color);
         }
         
+        /* Switch Toggle */
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 24px;
+        }
+        
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: var(--gray-300);
+            transition: .4s;
+            border-radius: var(--radius-full);
+        }
+        
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 16px;
+            width: 16px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        
+        input:checked + .slider {
+            background-color: var(--primary);
+        }
+        
+        input:checked + .slider:before {
+            transform: translateX(26px);
+        }
+        
+        /* Voice Input Section */
+        .voice-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: var(--space-sm);
+            margin-bottom: var(--space-lg);
+        }
+        
+        .voice-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: var(--space-md) var(--space-xl);
+            border-radius: var(--radius-full);
+            font-size: var(--text-lg);
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: var(--space-sm);
+            box-shadow: var(--shadow-primary);
+            transition: all 0.3s;
+            font-weight: 600;
+        }
+        
+        .voice-btn.listening {
+            background: var(--secondary);
+            animation: pulse 1.5s infinite;
+        }
+        
+        .voice-status {
+            font-size: var(--text-sm);
+            color: var(--text-secondary);
+        }
+        
         /* Animations */
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
         }
         
         .fade-in {
@@ -484,13 +638,38 @@
             .main-content {
                 padding: var(--space-md);
             }
+            
+            .btn {
+                padding: var(--space-sm) var(--space-md);
+                font-size: var(--text-sm);
+            }
+            
+            .card {
+                padding: var(--space-md);
+            }
+        }
+        
+        /* Mobile-specific styles */
+        @media (max-width: 480px) {
+            .header-title {
+                font-size: var(--text-lg);
+            }
+            
+            .header-actions .btn-icon {
+                width: 36px;
+                height: 36px;
+            }
+            
+            .quick-actions-grid {
+                grid-template-columns: 1fr 1fr;
+            }
         }
     </style>
 </head>
 <body>
     <div class="app-container">
         <header class="app-header">
-            <h1 class="header-title">Grocery Tracker</h1>
+            <h1 class="header-title">Modern Health Dashboard</h1>
             <div class="header-actions">
                 <button class="btn btn-icon" id="themeToggle">
                     <i class="fas fa-moon"></i>
@@ -518,6 +697,42 @@
                 </div>
                 <div class="progress-container">
                     <div class="progress-bar" id="budgetProgressBar"></div>
+                </div>
+            </div>
+            
+            <!-- Voice Input -->
+            <div class="card fade-in">
+                <div class="card-header">
+                    <h3>Voice Input</h3>
+                </div>
+                <div class="voice-section">
+                    <button id="micButton" class="voice-btn">
+                        <i class="fas fa-microphone"></i> <span id="voiceButtonText">Speak to add item</span>
+                    </button>
+                    <p id="voiceStatus" class="voice-status">Press the button and speak clearly</p>
+                    <p id="voiceError" class="error-message" style="display: none;"></p>
+                </div>
+            </div>
+            
+            <!-- Shopping List -->
+            <div class="card fade-in">
+                <div class="card-header">
+                    <h3>Shopping List</h3>
+                    <button class="btn btn-sm btn-outline" id="addShoppingItemBtn">Add Item</button>
+                </div>
+                <div class="shopping-list" id="shoppingListContainer">
+                    <!-- Filled dynamically by JavaScript -->
+                </div>
+            </div>
+            
+            <!-- Notes -->
+            <div class="card fade-in">
+                <div class="card-header">
+                    <h3>Notes</h3>
+                    <button class="btn btn-sm btn-outline" id="addNoteBtn">Add Note</button>
+                </div>
+                <div class="notes-container" id="notesContainer">
+                    <!-- Filled dynamically by JavaScript -->
                 </div>
             </div>
             
@@ -573,7 +788,7 @@
                 </div>
                 <div class="form-group">
                     <label for="itemPrice">Price (€)</label>
-                    <input type="number" id="itemPrice" placeholder="e.g. 3.75" step="0.01" required>
+                    <input type="text" id="itemPrice" placeholder="e.g. 3.75 or 2,75" required>
                 </div>
                 <div class="form-group">
                     <label for="itemCategory">Category</label>
@@ -606,6 +821,78 @@
         </div>
     </div>
 
+    <!-- Edit Item Modal -->
+    <div class="modal" id="editItemModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Edit Item</h3>
+                <button class="modal-close" id="closeEditModalBtn">&times;</button>
+            </div>
+            <form id="editItemForm">
+                <input type="hidden" id="editItemId">
+                <div class="form-group">
+                    <label for="editItemName">Item Name</label>
+                    <input type="text" id="editItemName" required>
+                </div>
+                <div class="form-group">
+                    <label for="editItemQuantity">Quantity</label>
+                    <input type="text" id="editItemQuantity" required>
+                </div>
+                <div class="form-group">
+                    <label for="editItemPrice">Price (€)</label>
+                    <input type="text" id="editItemPrice" required>
+                </div>
+                <div class="form-group">
+                    <label for="editItemCategory">Category</label>
+                    <select id="editItemCategory" required>
+                        <option value="produce">Produce</option>
+                        <option value="dairy">Dairy</option>
+                        <option value="meat">Meat</option>
+                        <option value="bakery">Bakery</option>
+                        <option value="pantry">Pantry</option>
+                        <option value="frozen">Frozen</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%;">Save Changes</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Add Shopping Item Modal -->
+    <div class="modal" id="addShoppingItemModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Add to Shopping List</h3>
+                <button class="modal-close" id="closeShoppingModalBtn">&times;</button>
+            </div>
+            <form id="addShoppingItemForm">
+                <div class="form-group">
+                    <label for="shoppingItemName">Item Name</label>
+                    <input type="text" id="shoppingItemName" placeholder="e.g. Milk" required>
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%;">Add to List</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Add Note Modal -->
+    <div class="modal" id="addNoteModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Add Note</h3>
+                <button class="modal-close" id="closeNoteModalBtn">&times;</button>
+            </div>
+            <form id="addNoteForm">
+                <div class="form-group">
+                    <label for="noteText">Note</label>
+                    <textarea id="noteText" placeholder="Enter your note here..." required></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%;">Save Note</button>
+            </form>
+        </div>
+    </div>
+
     <!-- Notifications Modal -->
     <div class="modal" id="notificationsModal">
         <div class="modal-content">
@@ -632,6 +919,14 @@
                 <input type="number" id="monthlyBudget" step="10" min="0">
             </div>
             <div class="form-group">
+                <label for="currencySelect">Currency</label>
+                <select id="currencySelect">
+                    <option value="€">Euro (€)</option>
+                    <option value="$">Dollar ($)</option>
+                    <option value="£">Pound (£)</option>
+                </select>
+            </div>
+            <div class="form-group">
                 <label for="languageSelect">Language</label>
                 <select id="languageSelect">
                     <option value="en">English</option>
@@ -645,7 +940,65 @@
                     <span class="slider round"></span>
                 </label>
             </div>
+            <div class="settings-option">
+                <span>Auto Month Switch</span>
+                <label class="switch">
+                    <input type="checkbox" id="autoMonthToggle" checked>
+                    <span class="slider round"></span>
+                </label>
+            </div>
             <button class="btn btn-primary" style="width: 100%; margin-top: var(--space-lg);" id="saveSettingsBtn">Save Settings</button>
+        </div>
+    </div>
+
+    <!-- Reports Modal -->
+    <div class="modal" id="reportsModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Reports & Analytics</h3>
+                <button class="modal-close" id="closeReportsModalBtn">&times;</button>
+            </div>
+            <div class="form-group">
+                <label for="reportMonth">Select Month</label>
+                <select id="reportMonth">
+                    <!-- Filled dynamically by JavaScript -->
+                </select>
+            </div>
+            <div class="card" style="margin-bottom: var(--space-md);">
+                <div class="card-header">
+                    <h4>Monthly Summary</h4>
+                </div>
+                <div id="monthlySummary">
+                    <!-- Filled dynamically by JavaScript -->
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-header">
+                    <h4>Category Breakdown</h4>
+                </div>
+                <div id="categoryBreakdown">
+                    <!-- Filled dynamically by JavaScript -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scan Receipt Modal -->
+    <div class="modal" id="scanReceiptModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Scan Receipt</h3>
+                <button class="modal-close" id="closeScanModalBtn">&times;</button>
+            </div>
+            <div style="text-align: center; padding: var(--space-xl) 0;">
+                <div style="width: 100%; height: 300px; background-color: var(--hover-color); border-radius: var(--radius-md); display: flex; flex-direction: column; align-items: center; justify-content: center; margin-bottom: var(--space-lg);">
+                    <i class="fas fa-camera" style="font-size: 3rem; color: var(--text-secondary); margin-bottom: var(--space-md);"></i>
+                    <p>Camera will activate here to scan receipt</p>
+                </div>
+                <button class="btn btn-primary" id="uploadReceiptBtn">
+                    <i class="fas fa-upload"></i> Upload Receipt Image
+                </button>
+            </div>
         </div>
     </div>
 
@@ -667,12 +1020,30 @@
     <script>
         // ====== APP STATE ======
         let groceries = JSON.parse(localStorage.getItem('groceries')) || [];
+        let shoppingList = JSON.parse(localStorage.getItem('shoppingList')) || [];
+        let notes = JSON.parse(localStorage.getItem('notes')) || [];
+        let monthlyData = JSON.parse(localStorage.getItem('monthlyData')) || {};
         let settings = JSON.parse(localStorage.getItem('settings')) || {
             monthlyBudget: 500,
             currency: '€',
             language: 'en',
-            darkMode: false
+            darkMode: false,
+            autoMonthSwitch: true
         };
+        
+        // Current month tracking
+        const currentDate = new Date();
+        const currentMonthYear = `${currentDate.getFullYear()}-${currentDate.getMonth()}`;
+        let currentMonthFilter = currentMonthYear;
+        
+        // Initialize monthly data if empty
+        if (!monthlyData[currentMonthYear]) {
+            monthlyData[currentMonthYear] = {
+                totalSpent: 0,
+                items: []
+            };
+            localStorage.setItem('monthlyData', JSON.stringify(monthlyData));
+        }
         
         // Sample data if empty
         if (groceries.length === 0) {
@@ -685,6 +1056,13 @@
                 { id: 6, name: "Organic Spinach", quantity: "200g", price: 3.25, category: "produce", date: new Date(Date.now() - 432000000).toISOString() }
             ];
             localStorage.setItem('groceries', JSON.stringify(groceries));
+            
+            // Add to monthly data
+            groceries.forEach(item => {
+                monthlyData[currentMonthYear].items.push(item);
+                monthlyData[currentMonthYear].totalSpent += item.price;
+            });
+            localStorage.setItem('monthlyData', JSON.stringify(monthlyData));
         }
 
         // ====== DOM ELEMENTS ======
@@ -694,19 +1072,36 @@
             budgetProgressBar: document.getElementById('budgetProgressBar'),
             recentItemsContainer: document.getElementById('recentItemsContainer'),
             allItemsContainer: document.getElementById('allItemsContainer'),
+            shoppingListContainer: document.getElementById('shoppingListContainer'),
+            notesContainer: document.getElementById('notesContainer'),
             addItemModal: document.getElementById('addItemModal'),
             viewAllModal: document.getElementById('viewAllModal'),
+            editItemModal: document.getElementById('editItemModal'),
+            addShoppingItemModal: document.getElementById('addShoppingItemModal'),
+            addNoteModal: document.getElementById('addNoteModal'),
             notificationsModal: document.getElementById('notificationsModal'),
             settingsModal: document.getElementById('settingsModal'),
+            reportsModal: document.getElementById('reportsModal'),
+            scanReceiptModal: document.getElementById('scanReceiptModal'),
             profileModal: document.getElementById('profileModal'),
             addItemForm: document.getElementById('addItemForm'),
+            editItemForm: document.getElementById('editItemForm'),
+            addShoppingItemForm: document.getElementById('addShoppingItemForm'),
+            addNoteForm: document.getElementById('addNoteForm'),
             closeModalBtn: document.getElementById('closeModalBtn'),
             closeViewAllModalBtn: document.getElementById('closeViewAllModalBtn'),
+            closeEditModalBtn: document.getElementById('closeEditModalBtn'),
+            closeShoppingModalBtn: document.getElementById('closeShoppingModalBtn'),
+            closeNoteModalBtn: document.getElementById('closeNoteModalBtn'),
             closeNotificationsModalBtn: document.getElementById('closeNotificationsModalBtn'),
             closeSettingsModalBtn: document.getElementById('closeSettingsModalBtn'),
+            closeReportsModalBtn: document.getElementById('closeReportsModalBtn'),
+            closeScanModalBtn: document.getElementById('closeScanModalBtn'),
             closeProfileModalBtn: document.getElementById('closeProfileModalBtn'),
             addItemBtn: document.getElementById('addItemBtn'),
             viewAllBtn: document.getElementById('viewAllBtn'),
+            addShoppingItemBtn: document.getElementById('addShoppingItemBtn'),
+            addNoteBtn: document.getElementById('addNoteBtn'),
             scanReceiptBtn: document.getElementById('scanReceiptBtn'),
             reportsBtn: document.getElementById('reportsBtn'),
             settingsBtn: document.getElementById('settingsBtn'),
@@ -714,25 +1109,79 @@
             profileBtn: document.getElementById('profileBtn'),
             themeToggle: document.getElementById('themeToggle'),
             monthlyBudgetInput: document.getElementById('monthlyBudget'),
+            currencySelect: document.getElementById('currencySelect'),
             languageSelect: document.getElementById('languageSelect'),
             darkModeToggle: document.getElementById('darkModeToggle'),
-            saveSettingsBtn: document.getElementById('saveSettingsBtn')
+            autoMonthToggle: document.getElementById('autoMonthToggle'),
+            saveSettingsBtn: document.getElementById('saveSettingsBtn'),
+            reportMonth: document.getElementById('reportMonth'),
+            monthlySummary: document.getElementById('monthlySummary'),
+            categoryBreakdown: document.getElementById('categoryBreakdown'),
+            uploadReceiptBtn: document.getElementById('uploadReceiptBtn'),
+            // Voice input elements
+            micButton: document.getElementById('micButton'),
+            voiceButtonText: document.getElementById('voiceButtonText'),
+            voiceStatus: document.getElementById('voiceStatus'),
+            voiceError: document.getElementById('voiceError')
         };
 
         // ====== INITIAL SETUP ======
         function initApp() {
+            // Check if month has changed
+            checkMonthChange();
+            
             // Apply saved settings
             applySettings();
             
             // Update UI
             updateDashboard();
+            updateShoppingList();
+            updateNotes();
             setupEventListeners();
+            
+            // Initialize voice recognition
+            initVoiceRecognition();
             
             // Animate cards on load
             const cards = document.querySelectorAll('.fade-in');
             cards.forEach((card, index) => {
                 card.style.animationDelay = `${index * 0.1}s`;
             });
+        }
+
+        // ====== MONTHLY DATA FUNCTIONS ======
+        function checkMonthChange() {
+            if (!settings.autoMonthSwitch) return;
+            
+            const lastAccess = localStorage.getItem('lastAccess');
+            const lastAccessDate = lastAccess ? new Date(lastAccess) : new Date();
+            const currentDate = new Date();
+            
+            // Check if month has changed since last access
+            if (lastAccessDate.getMonth() !== currentDate.getMonth() || 
+                lastAccessDate.getFullYear() !== currentDate.getFullYear()) {
+                
+                // Update current month filter
+                currentMonthFilter = `${currentDate.getFullYear()}-${currentDate.getMonth()}`;
+                
+                // Initialize new month data if it doesn't exist
+                if (!monthlyData[currentMonthFilter]) {
+                    monthlyData[currentMonthFilter] = {
+                        totalSpent: 0,
+                        items: []
+                    };
+                    localStorage.setItem('monthlyData', JSON.stringify(monthlyData));
+                }
+                
+                // Show notification about month change
+                const monthNames = ["January", "February", "March", "April", "May", "June",
+                                  "July", "August", "September", "October", "November", "December"];
+                const monthName = monthNames[currentDate.getMonth()];
+                alert(`Welcome to a new month! Your ${monthName} budget has been reset.`);
+            }
+            
+            // Update last access time
+            localStorage.setItem('lastAccess', new Date().toISOString());
         }
 
         // ====== SETTINGS FUNCTIONS ======
@@ -746,16 +1195,20 @@
                 elements.themeToggle.innerHTML = '<i class="fas fa-moon"></i>';
             }
             
-            // Set budget input
+            // Set inputs
             elements.monthlyBudgetInput.value = settings.monthlyBudget;
-            elements.darkModeToggle.checked = settings.darkMode;
+            elements.currencySelect.value = settings.currency;
             elements.languageSelect.value = settings.language;
+            elements.darkModeToggle.checked = settings.darkMode;
+            elements.autoMonthToggle.checked = settings.autoMonthSwitch;
         }
 
         function saveSettings() {
             settings.monthlyBudget = parseFloat(elements.monthlyBudgetInput.value) || 500;
-            settings.darkMode = elements.darkModeToggle.checked;
+            settings.currency = elements.currencySelect.value;
             settings.language = elements.languageSelect.value;
+            settings.darkMode = elements.darkModeToggle.checked;
+            settings.autoMonthSwitch = elements.autoMonthToggle.checked;
             
             localStorage.setItem('settings', JSON.stringify(settings));
             applySettings();
@@ -779,6 +1232,7 @@
             updateStats();
             updateBudgetProgress();
             updateRecentItems();
+            populateReportMonthSelector();
         }
 
         function updateStats() {
@@ -862,11 +1316,7 @@
                             <span>${item.quantity}</span>
                             <span>${settings.currency}${item.price.toFixed(2)}</span>
                         </div>
-                    </div>
-                    <div class="item-actions">
-                        <button class="btn btn-icon btn-danger" onclick="deleteItem(${item.id})">
-                            <i class="fas fa-trash"></i>
-                        </button>
+                        <small style="color: var(--text-secondary);">${formatDate(item.date)}</small>
                     </div>
                 </div>
             `).join('');
@@ -890,32 +1340,194 @@
                         <div class="all-items-item">
                             <div>
                                 <div style="font-weight: 500;">${item.name}</div>
-                                <small style="color: var(--text-secondary);">${item.quantity} • ${settings.currency}${item.price.toFixed(2)}</small>
+                                <small style="color: var(--text-secondary);">${item.quantity} • ${settings.currency}${item.price.toFixed(2)} • ${formatDate(item.date)}</small>
                             </div>
-                            <button class="btn btn-icon btn-danger" onclick="deleteItem(${item.id})">
-                                <i class="fas fa-trash"></i>
-                            </button>
+                            <div style="display: flex; gap: var(--space-xs);">
+                                <button class="btn btn-icon btn-edit" onclick="openEditModal(${item.id})">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="btn btn-icon btn-danger" onclick="deleteItem(${item.id})">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
                         </div>
                     `).join('')}
                 </div>
             `;
         }
 
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        }
+
+        // ====== SHOPPING LIST FUNCTIONS ======
+        function updateShoppingList() {
+            if (shoppingList.length === 0) {
+                elements.shoppingListContainer.innerHTML = `
+                    <div class="empty-state" style="padding: var(--space-md);">
+                        Your shopping list is empty
+                    </div>
+                `;
+                return;
+            }
+            
+            elements.shoppingListContainer.innerHTML = shoppingList.map(item => `
+                <div class="shopping-item ${item.completed ? 'completed' : ''}">
+                    <input type="checkbox" id="item-${item.id}" ${item.completed ? 'checked' : ''} onchange="toggleShoppingItem(${item.id})">
+                    <label for="item-${item.id}">${item.name}</label>
+                    <button class="btn btn-icon btn-danger" onclick="removeShoppingItem(${item.id})">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+            `).join('');
+        }
+
+        function addShoppingItem(e) {
+            e.preventDefault();
+            
+            const newItem = {
+                id: Date.now(),
+                name: document.getElementById('shoppingItemName').value,
+                completed: false
+            };
+            
+            shoppingList.unshift(newItem);
+            localStorage.setItem('shoppingList', JSON.stringify(shoppingList));
+            
+            closeModal(elements.addShoppingItemModal);
+            updateShoppingList();
+            document.getElementById('shoppingItemName').value = '';
+        }
+
+        function toggleShoppingItem(id) {
+            const item = shoppingList.find(item => item.id === id);
+            if (item) {
+                item.completed = !item.completed;
+                localStorage.setItem('shoppingList', JSON.stringify(shoppingList));
+                updateShoppingList();
+            }
+        }
+
+        function removeShoppingItem(id) {
+            if (confirm("Remove this item from your shopping list?")) {
+                shoppingList = shoppingList.filter(item => item.id !== id);
+                localStorage.setItem('shoppingList', JSON.stringify(shoppingList));
+                updateShoppingList();
+            }
+        }
+
+        function moveToGroceryList(id) {
+            const item = shoppingList.find(item => item.id === id);
+            if (item) {
+                const newItem = {
+                    id: Date.now(),
+                    name: item.name,
+                    quantity: "1",
+                    price: 0,
+                    category: "other",
+                    date: new Date().toISOString()
+                };
+                
+                groceries.unshift(newItem);
+                localStorage.setItem('groceries', JSON.stringify(groceries));
+                
+                // Remove from shopping list
+                shoppingList = shoppingList.filter(item => item.id !== id);
+                localStorage.setItem('shoppingList', JSON.stringify(shoppingList));
+                
+                updateDashboard();
+                updateShoppingList();
+                
+                // Open edit modal for the new grocery item
+                openEditModal(newItem.id);
+            }
+        }
+
+        // ====== NOTES FUNCTIONS ======
+        function updateNotes() {
+            if (notes.length === 0) {
+                elements.notesContainer.innerHTML = `
+                    <div class="empty-state" style="padding: var(--space-md);">
+                        No notes yet
+                    </div>
+                `;
+                return;
+            }
+            
+            elements.notesContainer.innerHTML = notes.map(note => `
+                <div class="note-item">
+                    <div class="note-text">${note.text}</div>
+                    <small>${formatDate(note.date)}</small>
+                    <button class="btn btn-icon btn-danger" onclick="removeNote(${note.id})">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+            `).join('');
+        }
+
+        function addNote(e) {
+            e.preventDefault();
+            
+            const newNote = {
+                id: Date.now(),
+                text: document.getElementById('noteText').value,
+                date: new Date().toISOString()
+            };
+            
+            notes.unshift(newNote);
+            localStorage.setItem('notes', JSON.stringify(notes));
+            
+            closeModal(elements.addNoteModal);
+            updateNotes();
+            document.getElementById('noteText').value = '';
+        }
+
+        function removeNote(id) {
+            if (confirm("Delete this note?")) {
+                notes = notes.filter(note => note.id !== id);
+                localStorage.setItem('notes', JSON.stringify(notes));
+                updateNotes();
+            }
+        }
+
         // ====== ITEM MANAGEMENT ======
         function addItem(e) {
             e.preventDefault();
+            
+            // Handle both comma and dot decimal separators
+            let priceValue = document.getElementById('itemPrice').value;
+            priceValue = priceValue.replace(',', '.');
             
             const newItem = {
                 id: Date.now(),
                 name: document.getElementById('itemName').value,
                 quantity: document.getElementById('itemQuantity').value,
-                price: parseFloat(document.getElementById('itemPrice').value),
+                price: parseFloat(priceValue),
                 category: document.getElementById('itemCategory').value,
                 date: new Date().toISOString()
             };
             
             groceries.unshift(newItem);
             localStorage.setItem('groceries', JSON.stringify(groceries));
+            
+            // Update monthly data
+            const currentMonthYear = `${new Date().getFullYear()}-${new Date().getMonth()}`;
+            if (!monthlyData[currentMonthYear]) {
+                monthlyData[currentMonthYear] = {
+                    totalSpent: 0,
+                    items: []
+                };
+            }
+            monthlyData[currentMonthYear].items.push(newItem);
+            monthlyData[currentMonthYear].totalSpent += newItem.price;
+            localStorage.setItem('monthlyData', JSON.stringify(monthlyData));
             
             closeModal(elements.addItemModal);
             updateDashboard();
@@ -924,10 +1536,88 @@
             alert(`${newItem.name} added successfully!`);
         }
 
+        function openEditModal(id) {
+            const item = groceries.find(item => item.id === id);
+            if (!item) return;
+            
+            document.getElementById('editItemId').value = item.id;
+            document.getElementById('editItemName').value = item.name;
+            document.getElementById('editItemQuantity').value = item.quantity;
+            document.getElementById('editItemPrice').value = item.price.toFixed(2);
+            document.getElementById('editItemCategory').value = item.category;
+            
+            openModal(elements.editItemModal);
+        }
+
+        function editItem(e) {
+            e.preventDefault();
+            
+            const id = parseInt(document.getElementById('editItemId').value);
+            const itemIndex = groceries.findIndex(item => item.id === id);
+            
+            if (itemIndex === -1) return;
+            
+            // Handle both comma and dot decimal separators
+            let priceValue = document.getElementById('editItemPrice').value;
+            priceValue = priceValue.replace(',', '.');
+            
+            // Calculate price difference for monthly data update
+            const oldPrice = groceries[itemIndex].price;
+            
+            groceries[itemIndex] = {
+                ...groceries[itemIndex],
+                name: document.getElementById('editItemName').value,
+                quantity: document.getElementById('editItemQuantity').value,
+                price: parseFloat(priceValue),
+                category: document.getElementById('editItemCategory').value
+            };
+            
+            localStorage.setItem('groceries', JSON.stringify(groceries));
+            
+            // Update monthly data
+            const itemDate = new Date(groceries[itemIndex].date);
+            const monthYear = `${itemDate.getFullYear()}-${itemDate.getMonth()}`;
+            if (monthlyData[monthYear]) {
+                // Find the item in monthly data and update it
+                const monthlyItemIndex = monthlyData[monthYear].items.findIndex(item => item.id === id);
+                if (monthlyItemIndex !== -1) {
+                    monthlyData[monthYear].items[monthlyItemIndex] = groceries[itemIndex];
+                    monthlyData[monthYear].totalSpent += (groceries[itemIndex].price - oldPrice);
+                    localStorage.setItem('monthlyData', JSON.stringify(monthlyData));
+                }
+            }
+            
+            closeModal(elements.editItemModal);
+            updateDashboard();
+            
+            // If view all modal is open, update it too
+            if (elements.viewAllModal.classList.contains('active')) {
+                updateAllItems();
+            }
+            
+            // Show success feedback
+            alert("Item updated successfully!");
+        }
+
         function deleteItem(id) {
             if (confirm("Are you sure you want to delete this item?")) {
+                const itemIndex = groceries.findIndex(item => item.id === id);
+                if (itemIndex === -1) return;
+                
+                const deletedItem = groceries[itemIndex];
+                
                 groceries = groceries.filter(item => item.id !== id);
                 localStorage.setItem('groceries', JSON.stringify(groceries));
+                
+                // Update monthly data
+                const itemDate = new Date(deletedItem.date);
+                const monthYear = `${itemDate.getFullYear()}-${itemDate.getMonth()}`;
+                if (monthlyData[monthYear]) {
+                    monthlyData[monthYear].items = monthlyData[monthYear].items.filter(item => item.id !== id);
+                    monthlyData[monthYear].totalSpent -= deletedItem.price;
+                    localStorage.setItem('monthlyData', JSON.stringify(monthlyData));
+                }
+                
                 updateDashboard();
                 
                 // If view all modal is open, update it too
@@ -937,6 +1627,193 @@
             }
         }
 
+        // ====== REPORTS FUNCTIONS ======
+        function populateReportMonthSelector() {
+            elements.reportMonth.innerHTML = '';
+            
+            // Add current month option
+            const currentOption = document.createElement('option');
+            currentOption.value = currentMonthFilter;
+            currentOption.textContent = 'Current Month';
+            elements.reportMonth.appendChild(currentOption);
+            
+            // Add other available months
+            Object.keys(monthlyData).sort().reverse().forEach(monthYear => {
+                if (monthYear === currentMonthFilter) return;
+                
+                const [year, month] = monthYear.split('-');
+                const monthName = new Date(year, month).toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+                
+                const option = document.createElement('option');
+                option.value = monthYear;
+                option.textContent = monthName;
+                elements.reportMonth.appendChild(option);
+            });
+            
+            // Update report when month changes
+            elements.reportMonth.addEventListener('change', updateReport);
+        }
+
+        function updateReport() {
+            const monthYear = elements.reportMonth.value;
+            const monthData = monthlyData[monthYear] || { totalSpent: 0, items: [] };
+            
+            // Update monthly summary
+            elements.monthlySummary.innerHTML = `
+                <div style="display: flex; justify-content: space-between; margin-bottom: var(--space-sm);">
+                    <span>Total Spent:</span>
+                    <span style="font-weight: 500;">${settings.currency}${monthData.totalSpent.toFixed(2)}</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; margin-bottom: var(--space-sm);">
+                    <span>Items Purchased:</span>
+                    <span style="font-weight: 500;">${monthData.items.length}</span>
+                </div>
+                <div style="display: flex; justify-content: space-between;">
+                    <span>Average per Item:</span>
+                    <span style="font-weight: 500;">${settings.currency}${(monthData.items.length > 0 ? (monthData.totalSpent / monthData.items.length).toFixed(2) : 0)}</span>
+                </div>
+            `;
+            
+            // Update category breakdown
+            const categoryTotals = {};
+            monthData.items.forEach(item => {
+                if (!categoryTotals[item.category]) {
+                    categoryTotals[item.category] = 0;
+                }
+                categoryTotals[item.category] += item.price;
+            });
+            
+            elements.categoryBreakdown.innerHTML = Object.keys(categoryTotals).map(category => `
+                <div style="margin-bottom: var(--space-sm);">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: var(--space-xs);">
+                        <span>${category.charAt(0).toUpperCase() + category.slice(1)}:</span>
+                        <span style="font-weight: 500;">${settings.currency}${categoryTotals[category].toFixed(2)}</span>
+                    </div>
+                    <div class="progress-container">
+                        <div class="progress-bar" style="width: ${(categoryTotals[category] / monthData.totalSpent * 100)}%;"></div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // ====== VOICE RECOGNITION ======
+        function initVoiceRecognition() {
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            
+            if (!SpeechRecognition) {
+                elements.micButton.style.display = 'none';
+                elements.voiceStatus.textContent = 'Voice recognition not supported in this browser';
+                return null;
+            }
+            
+            const recognition = new SpeechRecognition();
+            recognition.lang = 'en-US';
+            recognition.interimResults = false;
+            recognition.maxAlternatives = 3;
+            
+            recognition.onstart = () => {
+                elements.micButton.classList.add('listening');
+                elements.voiceStatus.textContent = 'Listening... Speak now';
+                elements.voiceError.style.display = 'none';
+            };
+            
+            recognition.onend = () => {
+                elements.micButton.classList.remove('listening');
+                if (elements.voiceError.style.display === 'none') {
+                    elements.voiceStatus.textContent = 'Press the button and speak clearly';
+                }
+            };
+            
+            recognition.onresult = (event) => {
+                const results = event.results[0];
+                const bestMatch = results[0].transcript;
+                const confidence = results[0].confidence;
+                
+                // Process the voice command
+                processVoiceCommand(bestMatch);
+            };
+            
+            recognition.onerror = (event) => {
+                console.error('Voice recognition error:', event.error);
+                let errorMessage;
+                
+                switch(event.error) {
+                    case 'no-speech':
+                        errorMessage = 'No speech was detected. Try again';
+                        break;
+                    case 'audio-capture':
+                        errorMessage = 'Microphone not accessible. Please check permissions';
+                        break;
+                    case 'not-allowed':
+                        errorMessage = 'Microphone access denied. Please allow access';
+                        break;
+                    default:
+                        errorMessage = 'Voice recognition error occurred. Try again';
+                }
+                
+                elements.voiceError.textContent = errorMessage;
+                elements.voiceError.style.display = 'block';
+                elements.voiceStatus.style.display = 'none';
+            };
+            
+            return recognition;
+        }
+
+        const recognition = initVoiceRecognition();
+
+        function processVoiceCommand(text) {
+            // Try to extract item, quantity and price
+            let itemName, quantity = "1", price = 0;
+            
+            // Improved price parsing (handles "5 euros 37" → 5.37)
+            const priceMatch = text.match(/(\d+)\s*(euros?|dollars?|pounds?|USD|EUR)(?:\s*(\d+))?/);
+            if (priceMatch) {
+                price = parseFloat(priceMatch[1]);
+                if (priceMatch[3]) {
+                    const cents = priceMatch[3].padEnd(2, '0').substring(0, 2);
+                    price += parseFloat(`0.${cents}`);
+                }
+            }
+            
+            // Improved quantity parsing with standardized units
+            const quantityMatch = text.match(/(\d+[,.]?\d*)\s*(kg|kilo|kilos|grams?|g|liters?|l|bottles?|pieces?|bags?|packets?|boxes?)/);
+            if (quantityMatch) {
+                quantity = parseFloat(quantityMatch[1].replace(',', '.'));
+                const unit = quantityMatch[2];
+                
+                // Standardize units
+                if (unit === 'kg' || unit === 'kilo' || unit === 'kilos') {
+                    quantity = quantity + ' kg';
+                } else if (unit === 'grams' || unit === 'gram' || unit === 'g') {
+                    quantity = quantity + ' g';
+                } else if (unit === 'liters' || unit === 'liter' || unit === 'l') {
+                    quantity = quantity + ' L';
+                } else {
+                    quantity = quantity + ' ' + unit;
+                }
+            }
+            
+            // Extract item name (remove quantity and price)
+            itemName = text
+                .replace(/(\d+)\s*(euros?|dollars?|pounds?|USD|EUR)(?:\s*(\d+))?/, '')
+                .replace(/(\d+[,.]?\d*)\s*(kg|kilo|kilos|grams?|g|liters?|l|bottles?|pieces?|bags?|packets?|boxes?)/, '')
+                .replace(/\s{2,}/g, ' ')
+                .trim();
+            
+            if (itemName === '') {
+                itemName = 'Unknown item';
+            }
+            
+            // Fill the form with the extracted data
+            document.getElementById('itemName').value = itemName;
+            document.getElementById('itemQuantity').value = quantity;
+            document.getElementById('itemPrice').value = price.toFixed(2);
+            document.getElementById('itemCategory').value = 'other';
+            
+            // Open the add item modal
+            openModal(elements.addItemModal);
+        }
+
         // ====== MODAL FUNCTIONS ======
         function openModal(modal) {
             modal.classList.add('active');
@@ -944,6 +1821,8 @@
             // Special setup for specific modals
             if (modal === elements.viewAllModal) {
                 updateAllItems();
+            } else if (modal === elements.reportsModal) {
+                updateReport();
             }
         }
 
@@ -953,6 +1832,10 @@
             // Reset forms if needed
             if (modal === elements.addItemModal) {
                 elements.addItemForm.reset();
+            } else if (modal === elements.addShoppingItemModal) {
+                elements.addShoppingItemForm.reset();
+            } else if (modal === elements.addNoteModal) {
+                elements.addNoteForm.reset();
             }
         }
 
@@ -961,15 +1844,24 @@
             // Modals
             elements.addItemBtn.addEventListener('click', () => openModal(elements.addItemModal));
             elements.viewAllBtn.addEventListener('click', () => openModal(elements.viewAllModal));
+            elements.addShoppingItemBtn.addEventListener('click', () => openModal(elements.addShoppingItemModal));
+            elements.addNoteBtn.addEventListener('click', () => openModal(elements.addNoteModal));
             elements.notificationsBtn.addEventListener('click', () => openModal(elements.notificationsModal));
             elements.settingsBtn.addEventListener('click', () => openModal(elements.settingsModal));
+            elements.reportsBtn.addEventListener('click', () => openModal(elements.reportsModal));
+            elements.scanReceiptBtn.addEventListener('click', () => openModal(elements.scanReceiptModal));
             elements.profileBtn.addEventListener('click', () => openModal(elements.profileModal));
             
             // Close buttons
             elements.closeModalBtn.addEventListener('click', () => closeModal(elements.addItemModal));
             elements.closeViewAllModalBtn.addEventListener('click', () => closeModal(elements.viewAllModal));
+            elements.closeEditModalBtn.addEventListener('click', () => closeModal(elements.editItemModal));
+            elements.closeShoppingModalBtn.addEventListener('click', () => closeModal(elements.addShoppingItemModal));
+            elements.closeNoteModalBtn.addEventListener('click', () => closeModal(elements.addNoteModal));
             elements.closeNotificationsModalBtn.addEventListener('click', () => closeModal(elements.notificationsModal));
             elements.closeSettingsModalBtn.addEventListener('click', () => closeModal(elements.settingsModal));
+            elements.closeReportsModalBtn.addEventListener('click', () => closeModal(elements.reportsModal));
+            elements.closeScanModalBtn.addEventListener('click', () => closeModal(elements.scanReceiptModal));
             elements.closeProfileModalBtn.addEventListener('click', () => closeModal(elements.profileModal));
             
             // Click outside modal to close
@@ -983,23 +1875,35 @@
             
             // Forms
             elements.addItemForm.addEventListener('submit', addItem);
+            elements.editItemForm.addEventListener('submit', editItem);
+            elements.addShoppingItemForm.addEventListener('submit', addShoppingItem);
+            elements.addNoteForm.addEventListener('submit', addNote);
             elements.saveSettingsBtn.addEventListener('click', saveSettings);
             
             // Theme toggle
             elements.themeToggle.addEventListener('click', toggleDarkMode);
             
-            // Quick actions
-            elements.scanReceiptBtn.addEventListener('click', () => {
-                alert("Receipt scanning would be implemented in a full app");
-            });
+            // Voice button
+            if (recognition) {
+                elements.micButton.addEventListener('click', () => {
+                    recognition.start();
+                    elements.voiceStatus.style.display = 'block';
+                    elements.voiceError.style.display = 'none';
+                });
+            }
             
-            elements.reportsBtn.addEventListener('click', () => {
-                alert("Reports would show spending analytics in a full app");
+            // Receipt upload
+            elements.uploadReceiptBtn.addEventListener('click', () => {
+                alert("In a full implementation, this would open a file picker to upload receipt images");
             });
         }
 
         // Make functions available globally
         window.deleteItem = deleteItem;
+        window.openEditModal = openEditModal;
+        window.toggleShoppingItem = toggleShoppingItem;
+        window.removeShoppingItem = removeShoppingItem;
+        window.moveToGroceryList = moveToGroceryList;
 
         // ====== INITIALIZE APP ======
         document.addEventListener('DOMContentLoaded', initApp);
